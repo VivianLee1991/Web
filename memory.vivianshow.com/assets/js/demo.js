@@ -8,18 +8,18 @@ export default function run_demo(root) {
 
 function initCards() {
   return [
-    'A', 'B', 'C', 'D',
-    'E', 'F', 'G', 'H',
-    'A', 'B', 'C', 'D',
-    'E', 'F', 'G', 'H'
+    'A', 'H', 'D', 'E',
+    'B', 'C', 'F', 'G',
+    'F', 'B', 'G', 'D',
+    'C', 'E', 'H', 'A',
   ];
 }
 
 function Card(props) {
   return (
-    <button className="card" onClick={props.onClick}>
+    <div className="card" onClick={props.onClick}>
       {props.value}
-    </button>
+    </div>
   );
 }
 
@@ -28,19 +28,20 @@ class Demo extends React.Component {
     super(props);
     this.state = {
       cardValues: initCards(),
-      memory: Array(16).fill(null),
+      memory: Array(16).fill(' '),
       isGuess: false,
       lastCard: -1,
       completeNum: 0,
+      numClicks: 0,
     };
   }
 
   handleClick(i, isGuess) {
     const memory = this.state.memory.slice();
-    if (memory[i] != null) {
+    if (memory[i] != ' ') {
       return;
     }
-    
+
     memory[i] = this.state.cardValues[i];
     if (!isGuess) {
       this.setState({
@@ -51,6 +52,7 @@ class Demo extends React.Component {
     }
     else {
       const lastCard = this.state.lastCard;
+      const numClicks = this.state.numClicks + 1;
 
       if (memory[i] === memory[lastCard]) {
         const completeNum = this.state.completeNum + 2;
@@ -59,6 +61,7 @@ class Demo extends React.Component {
           isGuess: false,
           lastCard: i,
           completeNum: completeNum,
+          numClicks: numClicks,
         });
       }
       else {
@@ -66,13 +69,19 @@ class Demo extends React.Component {
           memory: memory,
           isGuess: false,
           lastCard: i,
+          numClicks: numClicks,
         });
 
-        memory[i] = null;
-        memory[lastCard] = null;
-
         setTimeout(() => {
-          this.setState({memory: memory,});
+          const completeNum = this.state.completeNum;
+          memory[i] = ' ';
+          memory[lastCard] = ' ';
+          this.setState({
+            memory: memory,
+            isGuess: false,
+            lastCard: i,
+            completeNum: completeNum,
+          });
         }, 1000);
       }
     }
@@ -88,8 +97,9 @@ class Demo extends React.Component {
   }
 
   render() {
+    let score = "Your Score: " + (100 - this.state.numClicks);
     return (
-      <div>
+      <div class="gameBoard">
         <div>
           {this.renderCard(0)}
           {this.renderCard(1)}
@@ -113,6 +123,20 @@ class Demo extends React.Component {
           {this.renderCard(13)}
           {this.renderCard(14)}
           {this.renderCard(15)}
+        </div>
+        <div class="score">
+          <p>{score}</p>
+        </div>
+        <div>
+          <Button class="restart" onClick={()=>
+            this.setState({
+              cardValues: initCards(),
+              memory: Array(16).fill(' '),
+              isGuess: false,
+              lastCard: -1,
+              completeNum: 0,
+              numClicks: 0,
+            })}>Restart!</Button>
         </div>
       </div>
     );

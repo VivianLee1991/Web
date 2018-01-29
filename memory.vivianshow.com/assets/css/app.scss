@@ -12,7 +12,23 @@ h1 { text-align: center; }
   text-align: center;
   text-decoration: none;
   display: inline-block;
+  padding: 26px;
   font-size: 48px;
   margin: 12px 12px;
   cursor: pointer;
+}
+
+.gameBoard {
+  height: 480px;
+  margin: auto;
+}
+
+.score {
+  font-size: 24px;
+}
+
+.restart {
+  font-size: 24px;
+  padding: 12px;
+  text-align: center;
 }
