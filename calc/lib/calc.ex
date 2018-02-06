@@ -6,52 +6,87 @@ defmodule Calc do
   @doc """
   Parse and evaulate an arithmetic expression.
   String -> Number
-
-  ## Examples
-      iex> Calc.eval
-
   """
   def eval(exp) do
     numStack = []
     opStack = []
-
+    exp
+    |> parseExp
+    |> calcWithStacks(numStack, opStack)
   end
 
+  def calcWithStacks(elements, numStack, opStack) do
+    [head | tail] = elements
+  end
+
+
+  def isNum(exp) do
+    ! isOperator(exp) && !isOpenParen(exp) && !isCloseParen(exp)
+  end
+
+  def isOperator(exp) do
+    exp == "+" || exp == "-" || exp == "*" || exp == "/"
+  end
+
+  def isOpenParen(exp) do
+    exp == "("
+  end
+
+  def isCloseParen(exp) do
+    exp == ")"
+  end
+
+  @doc """
   # String -> list of numbers and operators: +, -, *, /, (, )
+  """
   def parseExp(exp) do
     exp
     |> String.split
-    |> Enum.flat_map(splitOutParen) #split "(", ")" from numbers.
+    |> Enum.flat_map(fn (x) -> splitOutParen(x) end) #split "(", ")" from numbers.
   end
 
-  @@doc """
+  @doc """
   Split "(", ")" from numbers.
-  ## Examples
-    iex> Calc.splitOutParen
-    iex> "((3"
-    ["(", "(", "3"]
-    iex> "13))"
-    ["13", ")", ")"]
   """
-
   def splitOutParen(exp) do
     cond do
       hasOpenParen(exp) ->
-        #split "(" from numbers.
+        splitOpenParen(exp, [])  #split "(" from numbers.
       hasCloseParen(exp) ->
-        #split ")" from numbers.
+        splitCloseParen(exp, []) #split ")" from numbers.
+      true -> [exp]
+    end
+  end
+
+  @doc """
+  Split "(" from numbers.
+  """
+  def splitOpenParen(exp, lst) do
+    if hasOpenParen(exp) do
+      "(" <> newExp = exp
+      newLst = lst ++ ["("]
+      splitOpenParen(newExp, newLst)
+    else
+      lst ++ [exp]
+    end
+  end
+
+  @doc """
+  Split ")" from numbers.
+  """
+  def splitCloseParen(exp, lst) do
+    if hasCloseParen(exp) do
+      newExp = String.replace_suffix(exp, ")", "")
+      newLst = [")"] ++ lst
+      splitCloseParen(newExp, newLst)
+    else
+      [exp] ++ lst
     end
   end
 
   @doc """
   Returns true iff the string starts with a "(",
   otherwise false.
-  ##Examples
-    iex> Calc.hasOpenParen
-    iex> "((12"
-    true
-    iex> "12"
-    false
   """
   def hasOpenParen(exp) do
     exp
@@ -61,37 +96,15 @@ defmodule Calc do
   @doc """
   Returns true iff the string ends with a ")",
   otherwise false.
-  ##Examples
-    iex> Calc.hasCloseParen
-    iex> "12))"
-    true
-    iex> "12"
-    false
   """
   def hasCloseParen(exp) do
     exp
-    |> String.reverse
-    |> String.starts_with?(")")
+    |> String.ends_with?(")")
   end
-
 
   @doc """
   Repeatedly print a prompt, read one line,
   eval it, and print the result.
-
-  ## Examples
-      iex> Calc.main
-      iex> 2 + 3
-      5
-      iex> 5 * 1
-      5
-      iex> 20 / 4
-      5
-      iex> 24 / 6 + (5 - 4)
-      5
-      iex> 1 + 3 * 3 + 1
-      11
-
   """
   def main() do
     case IO.gets "Enter a new expression:\n" do
@@ -104,5 +117,4 @@ defmodule Calc do
         main()
     end
   end
-
 end
