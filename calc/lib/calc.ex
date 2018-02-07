@@ -13,6 +13,8 @@ defmodule Calc do
     |> Enum.map(fn(x) ->   # convert string representing a number to the number
         if isNum?(x) do
           String.to_integer(x)
+        else
+          x
         end
       end)
     |> calcWithStacks([], [])
@@ -53,7 +55,7 @@ defmodule Calc do
   @doc """
   Returns true if op1 is prior to op2, otherwise false
   """
-  def priorTo(op1, op2, priority \\ %{"+" => 1, "-" => 1, "*" => 2, "/" => 2}) do
+  def priorTo(op1, op2, priority \\ %{"+" => 1, "-" => 1, "*" => 2, "/" => 2, "(" => 0}) do
     priority[op1] > priority[op2]
   end
 

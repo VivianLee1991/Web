@@ -3,16 +3,16 @@ defmodule CalcTest do
   doctest Calc
 
   test "eval" do
-    assert Calc.eval("5 - 2") == 4
+    assert Calc.eval("1 + (2 * (3 - 1))") == 5
+    assert Calc.eval("5 - 2") == 3
     assert Calc.eval("5 + 3") == 8
     assert Calc.eval("5 / 1") == 5
     assert Calc.eval("5 / 2") == 2
     assert Calc.eval("5 + 2 * 3") == 11
     assert Calc.eval("5 + 2 * 3 / 2") == 8
+    assert Calc.eval("3 + (5 + 2)") == 10
     assert Calc.eval("(5 + 2) * 3") == 21
-    assert Calc.eval("(3 + 5) + 2") == 10
-    assert Calc.eval("(3 + (5 * 1)) - 1") == 7
-    assert Calc.eval("1 + (2 * (3 - 1))") == 5
+    assert Calc.eval("(3 + (5 * 1)) - 1") == 7  
   end
 
   test "calculate one expression in stacks" do
