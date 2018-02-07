@@ -3,7 +3,25 @@ defmodule CalcTest do
   doctest Calc
 
   test "eval" do
-    assert Calc.eval("3 + 1") == ["3 + 1"]
+    assert Calc.eval("5 - 2") == 4
+    assert Calc.eval("5 + 3") == 8
+    assert Calc.eval("5 / 1") == 5
+    assert Calc.eval("5 / 2") == 2
+    assert Calc.eval("5 + 2 * 3") == 11
+    assert Calc.eval("5 + 2 * 3 / 2") == 8
+    assert Calc.eval("(5 + 2) * 3") == 21
+    assert Calc.eval("(3 + 5) + 2") == 10
+    assert Calc.eval("(3 + (5 * 1)) - 1") == 7
+    assert Calc.eval("1 + (2 * (3 - 1))") == 5
+  end
+
+  test "calculate one expression in stacks" do
+    assert Calc.calcOnce([2, 3, 1], ["*", "+"]) == {[6, 1], ["+"]}
+  end
+
+  test "calculate to the end of stacks" do
+    assert Calc.calToEnd([2, 3, 1], ["*", "+"]) == 7
+    assert Calc.calToEnd([2, 3, 1], ["+", "+"]) == 6
   end
 
   test "parse arithmetic expressions" do
@@ -28,14 +46,14 @@ defmodule CalcTest do
   end
 
   test "has open paren?" do
-    assert Calc.hasOpenParen("((12") == true
-    assert Calc.hasOpenParen("(12") == true
-    assert Calc.hasOpenParen("12") == false
+    assert Calc.hasOpenParen?("((12") == true
+    assert Calc.hasOpenParen?("(12") == true
+    assert Calc.hasOpenParen?("12") == false
   end
 
   test "has close paren?" do
-    assert Calc.hasCloseParen("12)))") == true
-    assert Calc.hasCloseParen("12)") == true
-    assert Calc.hasCloseParen("12") == false
+    assert Calc.hasCloseParen?("12)))") == true
+    assert Calc.hasCloseParen?("12)") == true
+    assert Calc.hasCloseParen?("12") == false
   end
 end
