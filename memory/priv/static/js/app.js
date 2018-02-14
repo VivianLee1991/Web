@@ -41268,8 +41268,8 @@ var Demo = function (_React$Component) {
     _this.channel = props.channel;
     _this.state = {
       memory: [], // displayed value of each card, "" if hidden.
-      isLock: false,
-      isWin: false,
+      isLock: 0,
+      isWin: 0,
       score: 100
     };
 
@@ -41286,7 +41286,7 @@ var Demo = function (_React$Component) {
   _createClass(Demo, [{
     key: 'gotView',
     value: function gotView(view) {
-      console.log("New view", view);
+      console.log("New view");
       this.setState(view.game);
     }
   }, {
@@ -41294,85 +41294,99 @@ var Demo = function (_React$Component) {
     value: function guess(index) {
       var _this2 = this;
 
-      if (this.state.isLock) {
-        return;
-      } else {
-        this.channel.push("guess", { card: index }).receive("ok", this.gotView.bind(this));
-        if (this.state.isLock) {
-          setTimeout(function () {
-            // after locking for 1000ms, do the following actions.
-            _this2.channel.push("recover", { card: index }).receive("ok", _this2.gotView.bind(_this2));
-          }, 1000);
-        }
+      this.channel.push("guess", { card: index }).receive("ok", this.gotView.bind(this));
+
+      if (this.state.isLock == 1) {
+        // after locking for 1000ms, do the following actions.
+        setTimeout(function () {
+          console.log("send recover");
+          _this2.channel.push("recover", { card: index }).receive("ok", _this2.gotView.bind(_this2));
+        }, 1000);
       }
     }
+    /*
+     guess(index) {
+       if (this.state.isLock == 1) {
+        }
+       else {
+         this.channel.push("guess", {card: index})
+             .receive("ok", this.gotView.bind(this));
+          if (this.state.isLock == 1) {  // after locking for 1000ms, do the following actions.
+           setTimeout(() => {
+             console.log("send recover");
+             this.channel.push("recover", {card: index})
+                 .receive("ok", this.gotView.bind(this));
+           }, 1000);
+         }
+       }
+     }
+    */
+
   }, {
     key: 'restart',
     value: function restart() {
-      this.channel.push("restart", {}).receive("ok", this.gotView.bind(this));
+      this.channel.push("restart", { restart: 1 }).receive("ok", this.gotView.bind(this));
     }
   }, {
     key: 'renderCard',
-    value: function renderCard(memoryArray, i) {
+    value: function renderCard(i) {
       var _this3 = this;
 
       return _react2.default.createElement(Card, {
-        value: memoryArray[i],
+        value: this.state.memory[i],
         onClick: function onClick() {
           return _this3.guess(i);
-        }
-      });
+        } });
     }
   }, {
     key: 'render',
     value: function render() {
       var _this4 = this;
 
-      var memoryArray = this.state.memory.toArray();
       var score = "Your Score: " + this.state.score;
       var winNote = '';
-      if (this.state.isWin) {
+      if (this.state.isWin == 1) {
         winNote = "You Win !!!";
       }
 
       return _react2.default.createElement(
         'div',
-        { 'class': 'gameBoard' },
+        { className: 'gameBoard' },
         _react2.default.createElement(
           'div',
           null,
-          this.renderCard(memoryArray, 0),
-          this.renderCard(memoryArray, 1),
-          this.renderCard(memoryArray, 2),
-          this.renderCard(memoryArray, 3)
+          this.renderCard(0),
+          this.renderCard(1),
+          this.renderCard(2),
+          this.renderCard(3)
         ),
         _react2.default.createElement(
           'div',
           null,
-          this.renderCard(memoryArray, 4),
-          this.renderCard(memoryArray, 5),
-          this.renderCard(memoryArray, 6),
-          this.renderCard(memoryArray, 7)
+          this.renderCard(4),
+          this.renderCard(5),
+          this.renderCard(6),
+          this.renderCard(7)
         ),
         _react2.default.createElement(
           'div',
           null,
-          this.renderCard(memoryArray, 8),
-          this.renderCard(memoryArray, 9),
-          this.renderCard(memoryArray, 10),
-          this.renderCard(memoryArray, 11)
+          this.renderCard(8),
+          this.renderCard(9),
+          this.renderCard(10),
+          this.renderCard(11)
         ),
         _react2.default.createElement(
           'div',
           null,
-          this.renderCard(memoryArray, 12),
-          this.renderCard(memoryArray, 13),
-          this.renderCard(memoryArray, 14),
-          this.renderCard(memoryArray, 15)
+          this.renderCard(12),
+          this.renderCard(13),
+          this.renderCard(14),
+          this.renderCard(15)
         ),
         _react2.default.createElement(
           'div',
-          { 'class': 'score' },
+          { className: 'score' },
           _react2.default.createElement(
             'p',
             null,
@@ -41384,10 +41398,34 @@ var Demo = function (_React$Component) {
           null,
           _react2.default.createElement(
             _reactstrap.Button,
-            { 'class': 'restart', onClick: function onClick() {
+            { className: 'restart', onClick: function onClick() {
                 return _this4.restart();
               } },
             'Restart!'
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          null,
+          _react2.default.createElement(
+            'div',
+            null,
+            "memory: " + this.state.memory
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            "isLock: " + this.state.isLock
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            "isWin: " + this.state.isWin
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            "score: " + this.state.score
           )
         )
       );
